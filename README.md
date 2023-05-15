@@ -213,9 +213,7 @@ kubectl get service
 ```
 
 Finally, open a browser window and go to: <ip_addr>:<extracted_port_num>
-
-
-
+![My Image](success.jpg)
 Yay!
 
 # Some Troubleshooting:
@@ -231,7 +229,9 @@ Yay!
 * https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 * https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 * https://earthly.dev/blog/k8cluster-mnging-blding-kubeadm/
+
 Calico:
 * https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
+
 Troubleshooting Guide:
 * https://odsc.medium.com/common-issues-with-kubernetes-deployments-and-how-to-fix-them-dd3b949df87
