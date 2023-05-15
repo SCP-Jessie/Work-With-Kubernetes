@@ -3,6 +3,7 @@ Short project and report demoing how to set up Docker, Kubernetes, and have a si
 
 At the start of the project or every time a node reboots, ```sudo swapoff -a``` needs to be entered. This disables swapping of files which allows for Kubernetes' isolation features to work. 
 
+Also enter ``bash```
 # Install Docker Engine:
 Ensures the necessary packages are present for Docker installation
 ```
@@ -99,7 +100,126 @@ go version
 ```
 
 # Install cri-dockerd service:
+Clone the cri-dockerd repo and move into its directory
+```
+cd && git clone https://github.com/Mirantis/cri-dockerd.git
+cd cri-dockerd
+```
+Build the code
+```
+sudo mkdir bin
+go build -o ../bin/cri-dockerd
+```
+install cri-dockerd
+```
+cd .. && mkdir -p /usr/local/bin
+sudo install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+```
 
+Get services
+```
+wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service
+wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
+```
+
+Configure cri-dockerd to work with systemd
+```
+sudo mv cri-docker.socket cri-docker.service /etc/systemd/system/
+sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+```
+Start service with cri-dockerd enabled
+```
+sudo systemctl daemon-reload
+sudo systemctl enable cri-docker.service
+sudo systemctl enable --now cri-docker.socket
+```
+Verify running status (optional):
+```
+sudo systemctl status cri-docker.socket
+```
+# Kubernetes installation:
+Add Google gpg key so repository can be trusted
+```
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+```
+Set up repository
+```
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+```
+Update the package list and use apt-cache policy to inspect versions available in the repository
+```
+sudo apt-get update
+apt-cache policy kubelet | head -n 20 
+```
+Install the required packages; if needed we can request a specific version by changing the VERSION variable 
+```
+VERSION=1.26.0-00
+sudo apt-get install -y kubelet=$VERSION kubeadm=$VERSION kubectl=$VERSION 
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+Ceck status of kubelet - should be in a crash loop (optional):
+```
+sudo systemctl status kubelet.service 
+```
+Ensure kubelet set to start when the system starts up
+```
+sudo systemctl enable kubelet.service
+```
+Inititalize Kubernetes control plane:
+```
+sudo kubeadm init --pod-network-cidr=<your_node_ip_addr>:///var/run/cri-dockerd.sock
+```
+For multi-node clusters, make sure to copy the full join command is displayed in the output upon successful initalization of the control plane. 
+
+Eitherway, start the cluster using the commands given in the output:
+```
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+To easily manage the network of the pods, Calico is installed and applied. It is free and easy-to-use for simple setups like this.
+```
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
+```
+Note that the cidr attribute in ipPools needs to be modified to whatever cidr your pod is using. Same as ip addr here. This file is hosted publicly on my repo and comes from Calico. 
+```
+kubectl create -f https://raw.githubusercontent.com/SCP-Jessie/Work-With-Kubernetes/main/custom-resources.yaml
+```
+According to Calico the ipPools cannot be changed after installation, so if a mistake is made somehow: 
+```
+kubectl delete -f https://raw.githubusercontent.com/<repo_path_of_mistake>/<messed_up_file_name>.yaml
+```
+And repeat the ```kubectl create -f``` step with the corrected file
+
+Make sure that pods are running: May have to wait a couple moments for all statuses to update to running
+```
+watch kubectl get pods -n calico-system
+```
+# Create a Kubernetes deployment with Nginx:
+```
+kubectl create deployment nginx --image=nginx
+```
+See active deployments (optional):
+```
+kubeclt get deployments
+```
+Create service - A service deployment is necessary to access the nginx deployment
+```
+kubectl create service nodeport nginx --tcp=80:80
+```
+See services - extract the port number from the corresponding service:
+```
+kubectl get service
+```
+
+Finally, open a browser window and go to: <ip_addr>:<extracted_port_num>
+
+
+
+Yay!
+
+# Some Troubleshooting:
+``` kubectl describe nodes ``` or ```kubectl describe node <node_name>``` can print out important information regarding a node's status and any issues it might have, like a lack of resources if the MemoryPressure, DiskPressure, or PIDPressure inder Conditions: Type have a status of True. The latter command will show the detailed descriptions only. 
 
 # Links to all my resources and credits:
 * https://kubernetes.io/docs/reference/kubectl/docker-cli-to-kubectl/
@@ -107,3 +227,11 @@ go version
 * https://app.pluralsight.com/library/courses/kubernetes-installation-configuration-fundamentals/table-of-contents
 * https://app.pluralsight.com/library/courses/kubernetes-getting-started/table-of-contents
 * https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+* https://www.mirantis.com/blog/how-to-install-cri-dockerd-and-migrate-nodes-from-dockershim/
+* https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+* https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+* https://earthly.dev/blog/k8cluster-mnging-blding-kubeadm/
+Calico:
+* https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
+Troubleshooting Guide:
+* https://odsc.medium.com/common-issues-with-kubernetes-deployments-and-how-to-fix-them-dd3b949df87
