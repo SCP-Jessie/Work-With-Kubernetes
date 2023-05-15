@@ -232,6 +232,9 @@ Yay!
 * https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 * https://earthly.dev/blog/k8cluster-mnging-blding-kubeadm/
 
+Most Helpful Video Guide:
+* https://www.youtube.com/watch?v=HTNt6YjkZ7M&t=375s
+
 Calico:
 * https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
 
