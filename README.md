@@ -213,7 +213,7 @@ kubectl get service
 ```
 
 Finally, open a browser window and go to: <ip_addr>:<extracted_port_num>
-![My Image](success.jpg)
+![My Image](success.JPG)
 Yay!
 
 # Some Troubleshooting:
