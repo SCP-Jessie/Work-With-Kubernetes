@@ -1,5 +1,5 @@
 # Work-With-Kubernetes
-Short project and report demoing how to set up Docker, Kubernetes, and have a single-node nginx docker image running in Kubernetes with a setup allowing for easy multi-node configuration.
+Short project and report demoing how to set up Docker, Kubernetes, and have a single-node nginx docker image running in Kubernetes with a setup allowing for easy multi-node configuration. Also note for multi-node configurations, the process is almost the same. The entire installation and configurations done here apply to all other nodes, except the join command must be executed on the other nodes after the master node is fully set up. 
 
 At the start of the project or every time a node reboots, ```sudo swapoff -a``` needs to be entered. This disables swapping of files which allows for Kubernetes' isolation features to work. 
 
