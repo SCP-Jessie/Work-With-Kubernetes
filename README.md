@@ -195,6 +195,7 @@ Make sure that pods are running: May have to wait a couple moments for all statu
 ```
 watch kubectl get pods -n calico-system
 ```
+![My Calicooooohhh](pods_running_with_calico.JPG)
 # Create a Kubernetes deployment with Nginx:
 ```
 kubectl create deployment nginx --image=nginx
@@ -207,13 +208,14 @@ Create service - A service deployment is necessary to access the nginx deploymen
 ```
 kubectl create service nodeport nginx --tcp=80:80
 ```
-See services - extract the port number from the corresponding service:
+See services - extract the port number from the corresponding service as shown in image:
 ```
 kubectl get service
 ```
+![My Nginxxxx](nginx_port.JPG)
 
 Finally, open a browser window and go to: <ip_addr>:<extracted_port_num>
-![My Image](success.JPG)
+![My Imageeee](success.JPG)
 Yay!
 
 # Some Troubleshooting:
