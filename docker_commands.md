@@ -55,3 +55,14 @@ sudo docker pull nginx
 ```
 sudo docker run -d --name server -p 80:80 nginx
 ```
+
+# Some other commands I used: 
+Stop and delete container:
+```
+sudo docker rm -f CONTAINER_ID
+```
+
+List docker containers:
+```
+sudo docker ps
+```
