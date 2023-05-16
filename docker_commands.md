@@ -1,5 +1,5 @@
 # How to do everything:
-My process for installing Docker and Kubernetes, and getting an nginx image from Docker to work in a single-node Kubernetes cluster.
+My original process for installing Docker and running an nginx image on Docker
 
 1. Uninstall any pre-existing versions of Docker 
 
@@ -55,14 +55,3 @@ sudo docker pull nginx
 ```
 sudo docker run -d --name server -p 80:80 nginx
 ```
-
-
-
-
-
-
-
-
-
-
-*This is just an example bullet point
