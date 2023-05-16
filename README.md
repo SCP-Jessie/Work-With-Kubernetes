@@ -240,3 +240,7 @@ Calico:
 
 Troubleshooting Guide:
 * https://odsc.medium.com/common-issues-with-kubernetes-deployments-and-how-to-fix-them-dd3b949df87
+
+# Cloudlab Image URL + URN:
+https://www.utah.cloudlab.us/image_metadata.php?uuid=9a1479d5-f2c4-11ed-b2c4-cc483a1e1a2e
+urn:publicid:IDN+utah.cloudlab.us+image+novel-scheduler-PG0:small-lan
