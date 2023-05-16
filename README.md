@@ -3,7 +3,7 @@ Short project and report demoing how to set up Docker, Kubernetes, and have a si
 
 At the start of the project or every time a node reboots, ```sudo swapoff -a``` needs to be entered. This disables swapping of files which allows for Kubernetes' isolation features to work. 
 
-Also enter ``bash```
+Also enter ```bash```
 # Install Docker Engine:
 Ensures the necessary packages are present for Docker installation
 ```
